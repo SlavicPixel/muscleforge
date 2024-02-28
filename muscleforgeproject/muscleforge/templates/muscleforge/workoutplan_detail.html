@@ -1,0 +1,33 @@
+{% extends "muscleforge/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Workout Plan Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">{{ workout_plan.title }}</h3>
+            <p class="card-text"><strong>Start Date:</strong> {{ workout_plan.start_date|date:"F d, Y" }}</p>
+            <p class="card-text"><strong>End Date:</strong> {{ workout_plan.end_date|date:"F d, Y" }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ workout_plan.status }}</p>
+            {% comment %} <a href="{% url 'workout_plan_edit' workout_plan.id %}" class="btn btn-primary">Edit Plan</a>
+            <a href="{% url 'workout_plan_delete' workout_plan.id %}" class="btn btn-danger">Delete Plan</a> {% endcomment %}
+        </div>
+    </div>
+
+    {% comment %} <h4 class="mt-4">Workout Sessions</h4>
+    {% for session in workout_plan.workoutsession_set.all %}
+    <div class="card mt-2">
+        <div class="card-body">
+            <h5 class="card-title">Session on {{ session.date|date:"F d, Y" }}</h5>
+            <p class="card-text"><strong>Duration:</strong> {{ session.duration }}</p>
+            <p class="card-text">{{ session.notes }}</p>
+            <a href="{% url 'workout_session_edit' session.id %}" class="btn btn-primary btn-sm">Edit Session</a>
+            <a href="{% url 'workout_session_delete' session.id %}" class="btn btn-danger btn-sm">Delete Session</a>
+        </div>
+    </div>
+    {% empty %}
+        <p>No sessions have been added to this plan yet.</p>
+    {% endfor %}
+    <a href="{% url 'workout_session_new' workout_plan.id %}" class="btn btn-success mt-3">Add New Session</a> {% endcomment %}
+</div>
+{% endblock content %}

@@ -15,11 +15,11 @@ class WorkoutPlan(models.Model):
     title = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=50)
+    status = models.BooleanField(default=False)
 
 class Exercise(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     difficulty_level = models.CharField(max_length=50)
     exercise_type = models.CharField(max_length=50)  
     equipment_needed = models.CharField(max_length=100)
