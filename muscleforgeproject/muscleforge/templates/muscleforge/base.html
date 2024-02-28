@@ -10,7 +10,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Blank</title>
+    {% if title %}
+        <title>MuscleForge - {{ title }}</title>
+    {% else %}
+        <title>MuscleForge</title>
+    {% endif %}
 
     <!-- Custom fonts for this template-->
     <link href="{% static "muscleforge/vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
@@ -45,17 +49,21 @@
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
                 <a class="nav-link" href="{% url "muscleforge-home" %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span></a>
             </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Interface
-            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "exercise-list" %}">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Exercises</span></a>
+                <a class="nav-link" href="{% url "workoutplan-list" %}">
+                        <i class="fa-solid fa-person-walking"></i>
+                        <span>Workout Plans</span></a>
+            </li>
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
@@ -194,6 +202,9 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{% static "muscleforge/js/sb-admin-2.min.js" %}"></script>
+
+    <!-- Font Awesome kit-->
+    <script src="https://kit.fontawesome.com/6695ee7bb1.js" crossorigin="anonymous"></script>
 
 </body>
 

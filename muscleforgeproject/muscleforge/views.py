@@ -47,3 +47,22 @@ class WorkoutPlanCreateView(CreateView):
 class WorkoutPlanDetailView(DetailView):
     model = WorkoutPlan
     context_object_name = 'workout_plan'
+
+    def get_context_data(self, **kwargs):
+        workoutplan = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'{workoutplan.title}'
+        return context
+
+class WorkoutPlanUpdateView(UpdateView): # dodati login reguired
+    model = WorkoutPlan
+    form_class = WorkoutPlanForm
+    context_object_name = 'workout_plan'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class WorkoutPlanDeleteView(DeleteView): # dodati login reguired
+    model = WorkoutPlan
+    success_url = '/workoutplans/'

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
@@ -17,12 +18,21 @@ class WorkoutPlan(models.Model):
     end_date = models.DateField()
     status = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("workoutplan-detail", kwargs={"pk": self.pk})
+
 class Exercise(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     difficulty_level = models.CharField(max_length=50)
     exercise_type = models.CharField(max_length=50)  
     equipment_needed = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class WorkoutSession(models.Model):
     workout_plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE)

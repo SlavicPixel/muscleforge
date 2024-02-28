@@ -6,7 +6,7 @@
               <div class="col-md-4">
                 <div class="card" style="width: 18rem;">
                   <div class="card-body">
-                    <h5 class="card-title"><a href="{% url 'workoutplans-detail' workoutplan.id %}" class="text-decoration-none">{{ workoutplan.title }}</a></h5>                  
+                    <h5 class="card-title"><a href="{% url 'workoutplan-detail' workoutplan.id %}" class="text-decoration-none">{{ workoutplan.title }}</a></h5>                  
                     <h6 class="card-subtitle mb-2 text-muted">{{ workoutplan.start_date }} - {{ workoutplan.end_date }}</h6>
                     <p class="card-text">{{ exercise.description }}</p>
                     {% if workoutplan.status %}

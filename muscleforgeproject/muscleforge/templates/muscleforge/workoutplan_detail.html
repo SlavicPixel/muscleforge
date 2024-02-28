@@ -9,8 +9,8 @@
             <p class="card-text"><strong>Start Date:</strong> {{ workout_plan.start_date|date:"F d, Y" }}</p>
             <p class="card-text"><strong>End Date:</strong> {{ workout_plan.end_date|date:"F d, Y" }}</p>
             <p class="card-text"><strong>Status:</strong> {{ workout_plan.status }}</p>
-            {% comment %} <a href="{% url 'workout_plan_edit' workout_plan.id %}" class="btn btn-primary">Edit Plan</a>
-            <a href="{% url 'workout_plan_delete' workout_plan.id %}" class="btn btn-danger">Delete Plan</a> {% endcomment %}
+            <a href="{% url 'workoutplan-update' workout_plan.id %}" class="btn btn-primary">Edit Plan</a>
+            <a href="{% url 'workoutplan-delete' workout_plan.id %}" class="btn btn-danger">Delete Plan</a>
         </div>
     </div>
 

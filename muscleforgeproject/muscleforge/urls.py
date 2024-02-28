@@ -7,7 +7,9 @@ from .views import (
     ExerciseDeleteView,
     WorkoutPlanListView,
     WorkoutPlanCreateView,
-    WorkoutPlanDetailView
+    WorkoutPlanDetailView,
+    WorkoutPlanUpdateView,
+    WorkoutPlanDeleteView
 )
 
 urlpatterns = [
@@ -16,7 +18,9 @@ urlpatterns = [
     path('exercises/new/', ExerciseCreateView.as_view(), name="exercise-new"),
     path('exercises/<int:pk>/update/', ExerciseUpdateView.as_view(), name="exercise-update"),
     path('exercises/<int:pk>/delete/', ExerciseDeleteView.as_view(), name="exercise-delete"),
-    path('workoutplans/', WorkoutPlanListView.as_view(), name="workoutplans-list"),
-    path('workoutplans/<int:pk>/', WorkoutPlanDetailView.as_view(), name="workoutplans-detail"),
-    path('workoutplans/new/', WorkoutPlanCreateView.as_view(), name="workoutplans-new"),
+    path('workoutplans/', WorkoutPlanListView.as_view(), name="workoutplan-list"),
+    path('workoutplans/<int:pk>/', WorkoutPlanDetailView.as_view(), name="workoutplan-detail"),
+    path('workoutplans/new/', WorkoutPlanCreateView.as_view(), name="workoutplan-new"),
+    path('workoutplans/<int:pk>/update/', WorkoutPlanUpdateView.as_view(), name="workoutplan-update"),
+    path('workoutplans/<int:pk>/delete/', WorkoutPlanDeleteView.as_view(), name="workoutplan-delete"),
 ]
