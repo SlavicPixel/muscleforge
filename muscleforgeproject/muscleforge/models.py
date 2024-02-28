@@ -40,6 +40,9 @@ class WorkoutSession(models.Model):
     duration = models.DurationField() 
     notes = models.TextField(blank=True, null=True)
 
+    def get_absolute_url(self):
+        return reverse("workoutplan-detail", kwargs={"pk": self.workout_plan.pk})
+
 class ExerciseInSession(models.Model):
     workout_session = models.ForeignKey(WorkoutSession, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)

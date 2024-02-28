@@ -9,7 +9,10 @@ from .views import (
     WorkoutPlanCreateView,
     WorkoutPlanDetailView,
     WorkoutPlanUpdateView,
-    WorkoutPlanDeleteView
+    WorkoutPlanDeleteView,
+    WorkoutSessionCreateView,
+    WorkoutSessionUpdateView,
+    WorkoutSessionDeleteView
 )
 
 urlpatterns = [
@@ -23,4 +26,7 @@ urlpatterns = [
     path('workoutplans/new/', WorkoutPlanCreateView.as_view(), name="workoutplan-new"),
     path('workoutplans/<int:pk>/update/', WorkoutPlanUpdateView.as_view(), name="workoutplan-update"),
     path('workoutplans/<int:pk>/delete/', WorkoutPlanDeleteView.as_view(), name="workoutplan-delete"),
+    path('workoutplans/<int:workoutplan_pk>/workoutsession/new', WorkoutSessionCreateView.as_view(), name="workoutsession-new"),
+    path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/update', WorkoutSessionUpdateView.as_view(), name="workoutsession-update"),
+    path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/delete', WorkoutSessionDeleteView.as_view(), name="workoutsession-delete"),
 ]

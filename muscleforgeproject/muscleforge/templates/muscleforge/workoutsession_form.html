@@ -1,0 +1,45 @@
+{% extends "muscleforge/base.html" %}
+{% load crispy_forms_tags %} 
+{% block content %}
+<div class="container">
+    <form method="post" id="workoutSessionForm">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Add Workout Session</legend>
+            {{ form|crispy }}
+            <div class="form-row">
+                <div class="col">
+                    <label for="hours">Hours:</label>
+                    <input type="number" id="hours" class="form-control" name="hours" min="0" value="0">
+                </div>
+                <div class="col">
+                    <label for="minutes">Minutes:</label>
+                    <input type="number" id="minutes" class="form-control" name="minutes" min="0" max="59" value="0">
+                </div>
+                <div class="col">
+                    <label for="seconds">Seconds:</label>
+                    <input type="number" id="seconds" class="form-control" name="seconds" min="0" max="59" value="0">
+                </div>
+                <input type="hidden" id="duration" name="duration">
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Save</button>
+        </div>
+    </form>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("workoutSessionForm");
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const hours = document.getElementById("hours").value.padStart(2, '0');
+        const minutes = document.getElementById("minutes").value.padStart(2, '0');
+        const seconds = document.getElementById("seconds").value.padStart(2, '0');
+        // Combine hours, minutes, and seconds
+        document.getElementById("duration").value = `${hours}:${minutes}:${seconds}`;
+        this.submit(); // Proceed with the form submission
+    });
+});
+</script>
+{% endblock content %}
