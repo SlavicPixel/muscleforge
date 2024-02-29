@@ -1,0 +1,42 @@
+{% extends "muscleforge/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Workout Session Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Session on {{ workout_session.date|date:"F d, Y" }}</h3>
+            <p class="card-text"><strong>Workout Plan:</strong> {{ workout_session.workout_plan }}</p>
+            <p class="card-text"><strong>Duration:</strong> {{ workout_session.duration}}</p>
+            <a href="{% url 'workoutsession-update' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-primary btn-sm">Edit Session</a>
+            <a href="{% url 'workoutsession-delete' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-danger btn-sm">Delete Session</a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Exercise</th>
+            <th scope="col">Repetitions</th>
+            <th scope="col">Sets</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Equipment</th>
+            <th scope="col">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exercise in exercises %}
+          <tr>
+            <td>{{ exercise.exercise.name }}</td>
+            <td>{{ exercise.repetitions }}</td>
+            <td>{{ exercise.sets }}</td>
+            <td>{{ exercise.weight_used }}</td>
+            <td>{{ exercise.exercise.equipment_needed }}</td>
+            <td>{{ exercise.exercise.exercise_type }}</td>
+            <td>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endblock content %}

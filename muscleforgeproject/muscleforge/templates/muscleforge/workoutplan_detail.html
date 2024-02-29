@@ -22,7 +22,7 @@
     {% for session in workout_plan.workoutsession_set.all %}
     <div class="card mt-2">
         <div class="card-body">
-            <h5 class="card-title">Session on {{ session.date|date:"F d, Y" }}</h5>
+            <a href="{% url 'workoutsession-detail' workoutplan_pk=workout_plan.id session_pk=session.id %}"><h5 class="card-title">Session on {{ session.date|date:"F d, Y" }}</h5></a>
             <p class="card-text"><strong>Duration:</strong> {{ session.duration }}</p>
             <p class="card-text">{{ session.notes }}</p>
             <a href="{% url 'workoutsession-update' workoutplan_pk=workout_plan.id session_pk=session.id %}" class="btn btn-primary btn-sm">Edit Session</a>

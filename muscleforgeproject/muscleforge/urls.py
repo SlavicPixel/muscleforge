@@ -11,6 +11,7 @@ from .views import (
     WorkoutPlanUpdateView,
     WorkoutPlanDeleteView,
     WorkoutSessionCreateView,
+    WorkoutSessionDetailView,
     WorkoutSessionUpdateView,
     WorkoutSessionDeleteView
 )
@@ -27,6 +28,7 @@ urlpatterns = [
     path('workoutplans/<int:pk>/update/', WorkoutPlanUpdateView.as_view(), name="workoutplan-update"),
     path('workoutplans/<int:pk>/delete/', WorkoutPlanDeleteView.as_view(), name="workoutplan-delete"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/new', WorkoutSessionCreateView.as_view(), name="workoutsession-new"),
+    path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/', WorkoutSessionDetailView.as_view(), name="workoutsession-detail"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/update', WorkoutSessionUpdateView.as_view(), name="workoutsession-update"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/delete', WorkoutSessionDeleteView.as_view(), name="workoutsession-delete"),
 ]

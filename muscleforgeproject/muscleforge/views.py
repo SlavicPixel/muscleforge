@@ -1,6 +1,6 @@
 from django import forms
 from django.urls import reverse_lazy
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import (
     ListView, 
     DetailView, 
@@ -8,8 +8,10 @@ from django.views.generic import (
     UpdateView, 
     DeleteView
 )
+from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
+from django.views.generic.edit import ModelFormMixin
 from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession
-from .forms import WorkoutPlanForm, WorkoutSessionForm
+from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet
 from datetime import timedelta
 
 def home(request):
@@ -89,19 +91,41 @@ class WorkoutPlanDeleteView(DeleteView): # dodati login reguired
     model = WorkoutPlan
     success_url = '/workoutplans/'
 
-class WorkoutSessionCreateView(CreateView):
-    model = WorkoutSession
+class WorkoutSessionFormsetMixin(ModelFormMixin):
     form_class = WorkoutSessionForm
+    formset_class = ExerciseInSessionFormSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Session'
+        if self.request.POST:
+            context['formset'] = self.formset_class(self.request.POST, instance=self.object)
+        else:
+            context['formset'] = self.formset_class(instance=self.object)
+        return context
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        
-        hours = int(self.request.POST.get('hours', 0))
-        minutes = int(self.request.POST.get('minutes', 0))
-        seconds = int(self.request.POST.get('seconds', 0))
-        form.instance.duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        
-        return super().form_valid(form)
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            # This call is necessary to ensure the form's instance is populated with form data.
+            self.object = form.save(commit=False)
+            self.object.user = self.request.user
+
+            duration_seconds = int(self.request.POST.get('duration', 0))
+            self.object.duration = timedelta(seconds=duration_seconds)
+
+            self.object.save()
+
+            formset.instance = self.object
+            formset.save()
+            return super(ModelFormMixin, self).form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+class WorkoutSessionCreateView(WorkoutSessionFormsetMixin, CreateView):
+    model = WorkoutSession
+    form_class = WorkoutSessionForm
 
     def get_initial(self):
         initial = super(WorkoutSessionCreateView, self).get_initial()
@@ -110,23 +134,28 @@ class WorkoutSessionCreateView(CreateView):
             initial['workout_plan'] = workoutplan_pk
         return initial
 
-class WorkoutSessionUpdateView(UpdateView):
+class WorkoutSessionUpdateView(WorkoutSessionFormsetMixin, UpdateView):
     model = WorkoutSession
     form_class = WorkoutSessionForm
 
     def get_object(self, queryset=None):
         session_pk = self.kwargs.get('session_pk')
         return get_object_or_404(WorkoutSession, pk=session_pk)
+    
+    def get_context_data(self, **kwargs):
+        context = super(WorkoutSessionUpdateView, self).get_context_data(**kwargs)
+        workout_session = self.get_object()
+        duration_seconds = workout_session.duration.total_seconds()
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        
-        hours = int(self.request.POST.get('hours', 0))
-        minutes = int(self.request.POST.get('minutes', 0))
-        seconds = int(self.request.POST.get('seconds', 0))
-        form.instance.duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        
-        return super().form_valid(form)
+        hours = duration_seconds // 3600
+        minutes = (duration_seconds % 3600) // 60
+        seconds = (duration_seconds % 60)
+
+        context['hours'] = int(hours)
+        context['minutes'] = int(minutes)
+        context['seconds'] = int(seconds)
+
+        return context
 
 class WorkoutSessionDeleteView(DeleteView):
     model = WorkoutSession
@@ -138,3 +167,17 @@ class WorkoutSessionDeleteView(DeleteView):
     def get_object(self, queryset=None):
         session_pk = self.kwargs.get('session_pk')
         return get_object_or_404(WorkoutSession, pk=session_pk)
+
+class WorkoutSessionDetailView(DetailView):
+    model = WorkoutSession
+    context_object_name = 'workout_session'
+
+    def get_object(self, queryset=None):
+        session_pk = self.kwargs.get('session_pk')
+        return get_object_or_404(WorkoutSession, pk=session_pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Session Details'
+        context['exercises'] = ExerciseInSession.objects.filter(workout_session_id=self.kwargs.get('session_pk'))
+        return context

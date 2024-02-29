@@ -49,7 +49,6 @@ class ExerciseInSession(models.Model):
     repetitions = models.IntegerField()
     sets = models.IntegerField()
     weight_used = models.FloatField(blank=True, null=True)  
-    duration = models.DurationField(blank=True, null=True)  
 
 class ProgressTracker(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

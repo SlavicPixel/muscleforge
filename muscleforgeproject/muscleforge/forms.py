@@ -1,5 +1,6 @@
 from django import forms
-from .models import WorkoutPlan, WorkoutSession
+from django.forms import inlineformset_factory
+from .models import WorkoutPlan, WorkoutSession, ExerciseInSession
 
 class WorkoutPlanForm(forms.ModelForm):
     class Meta:
@@ -17,3 +18,13 @@ class WorkoutSessionForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class ExerciseInSessionForm(forms.ModelForm):
+    class Meta:
+        model = ExerciseInSession
+        fields = ['exercise', 'repetitions', 'sets', 'weight_used'] #excluded durations
+
+ExerciseInSessionFormSet = inlineformset_factory(
+    WorkoutSession, ExerciseInSession, form=ExerciseInSessionForm,
+    extra=1, can_delete=True, can_delete_extra=True
+)
