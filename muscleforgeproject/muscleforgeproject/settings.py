@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'muscleforge.apps.MuscleforgeConfig',
+    'users.apps.UsersConfig',
     'crispy_forms',
     'crispy_bootstrap4',
     'django.contrib.admin',
