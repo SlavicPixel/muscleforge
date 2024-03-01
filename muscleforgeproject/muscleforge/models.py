@@ -2,15 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    height = models.FloatField()  
-    weight = models.FloatField() 
-    age = models.IntegerField()
-    gender = models.CharField(max_length=10)
-    fitness_goals = models.TextField()
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-
 class WorkoutPlan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)

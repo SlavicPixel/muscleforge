@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 from .views import (
     ExerciseListView,
@@ -32,3 +34,6 @@ urlpatterns = [
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/update', WorkoutSessionUpdateView.as_view(), name="workoutsession-update"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/delete', WorkoutSessionDeleteView.as_view(), name="workoutsession-delete"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

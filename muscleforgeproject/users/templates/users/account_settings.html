@@ -1,0 +1,27 @@
+{% extends "muscleforge/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+            <div class="card mb-4">
+                <div class="card-header">Account Settings</div>
+                <div class="container">
+                    <div class="media">
+                        <img class="img-profile rounded-circle img-thumbnail mt-2 mb-2" width="15%" src="{{ user.userprofile.profile_picture.url }}">
+                        <div class="media-body mt-5 ml-3">
+                            <h2>{{ user.username }}</h2>
+                            <p>{{ user.email }}</p>
+                        </div> 
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form class="user" method="post">
+                        {% csrf_token %}
+                        {{ u_form|crispy }}
+                        <button class="btn btn-primary">
+                            Update
+                        </button>
+                    </form>
+                </div>
+            </div>
+    </div>
+{% endblock content %}

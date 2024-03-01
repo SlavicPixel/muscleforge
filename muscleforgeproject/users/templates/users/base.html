@@ -30,12 +30,31 @@
 <body class="bg-gradient-primary">
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
+            <div class="alert alert-{{ message.tags }} text-center">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
-    {% block content %}{% endblock content %}
+    <div class="container">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <i class="fas fa-dumbbell"></i>
+                                <h2>MuscleForge</h2>
+                                <hr>
+                            </div>
+                            {% block content %}{% endblock content %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <!-- Bootstrap core JavaScript-->
     <script src="{% static "muscleforge/vendor/jquery/jquery.min.js" %}"></script>
