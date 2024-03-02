@@ -16,6 +16,7 @@ class WorkoutPlan(models.Model):
         return reverse("workoutplan-detail", kwargs={"pk": self.pk})
 
 class Exercise(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     difficulty_level = models.CharField(max_length=50)
@@ -24,6 +25,7 @@ class Exercise(models.Model):
 
     def __str__(self):
         return self.name
+    
 
 class WorkoutSession(models.Model):
     workout_plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE)

@@ -10,6 +10,7 @@ from django.views.generic import (
 )
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.edit import ModelFormMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession
 from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet
 from datetime import timedelta
@@ -17,21 +18,30 @@ from datetime import timedelta
 def home(request):
     return render(request, 'muscleforge/home.html')
 
-class ExerciseListView(ListView):
+class ExerciseListView(LoginRequiredMixin, ListView):
     model = Exercise
     context_object_name = 'exercises'
     ordering = ['exercise_type']
 
-class ExerciseCreateView(CreateView): # dodati login reguired
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
+    
+
+class ExerciseCreateView(LoginRequiredMixin, CreateView): # dodati login reguired
     model = Exercise
+    success_url = '/exercises/'
     fields = ['name', 'description', 'difficulty_level', 'exercise_type', 'equipment_needed']
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['action'] = 'Add'
         return context
 
-class ExerciseUpdateView(UpdateView): # dodati login reguired
+class ExerciseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # dodati login reguired
     model = Exercise
     fields = ['name', 'description', 'difficulty_level', 'exercise_type', 'equipment_needed']
     success_url = '/exercises/'
@@ -41,16 +51,31 @@ class ExerciseUpdateView(UpdateView): # dodati login reguired
         context['action'] = 'Update'
         return context
 
-class ExerciseDeleteView(DeleteView): # dodati login reguired
+    def test_func(self):
+        exercise = self.get_object()
+        if self.request.user.id == exercise.user.id:
+            return True
+        return False
+
+class ExerciseDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView): # dodati login reguired
     model = Exercise
     success_url = '/exercises/'
 
-class WorkoutPlanListView(ListView):
+    def test_func(self):
+        exercise = self.get_object()
+        if self.request.user.id == exercise.user.id:
+            return True
+        return False
+
+class WorkoutPlanListView(LoginRequiredMixin, ListView):
     model = WorkoutPlan
     context_object_name = 'workoutplans'
     ordering = ['start_date']
 
-class WorkoutPlanCreateView(CreateView):
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
+
+class WorkoutPlanCreateView(LoginRequiredMixin, CreateView):
     model = WorkoutPlan
     form_class = WorkoutPlanForm
 
@@ -63,7 +88,7 @@ class WorkoutPlanCreateView(CreateView):
         context['action'] = 'Add'
         return context
 
-class WorkoutPlanDetailView(DetailView):
+class WorkoutPlanDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = WorkoutPlan
     context_object_name = 'workout_plan'
 
@@ -73,7 +98,13 @@ class WorkoutPlanDetailView(DetailView):
         context['title'] = f'{workoutplan.title}'
         return context
 
-class WorkoutPlanUpdateView(UpdateView): # dodati login reguired
+    def test_func(self):
+        workout_plan = self.get_object()
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
+
+class WorkoutPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # dodati login reguired
     model = WorkoutPlan
     form_class = WorkoutPlanForm
     context_object_name = 'workout_plan'
@@ -87,9 +118,21 @@ class WorkoutPlanUpdateView(UpdateView): # dodati login reguired
         context['action'] = 'Update'
         return context
 
-class WorkoutPlanDeleteView(DeleteView): # dodati login reguired
+    def test_func(self):
+        workout_plan = self.get_object()
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
+
+class WorkoutPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView): # dodati login reguired
     model = WorkoutPlan
     success_url = '/workoutplans/'
+
+    def test_func(self):
+        workout_plan = self.get_object()
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
 
 class WorkoutSessionFormsetMixin(ModelFormMixin):
     form_class = WorkoutSessionForm
@@ -123,9 +166,20 @@ class WorkoutSessionFormsetMixin(ModelFormMixin):
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
-class WorkoutSessionCreateView(WorkoutSessionFormsetMixin, CreateView):
+class WorkoutSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, WorkoutSessionFormsetMixin, CreateView):
     model = WorkoutSession
     form_class = WorkoutSessionForm
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkoutSessionCreateView, self).get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            context['formset'] = ExerciseInSessionFormSet(self.request.POST, self.request.FILES)
+        else:
+            exercise_formset = ExerciseInSessionFormSet()
+            for form in exercise_formset.forms:
+                form.fields['exercise'].queryset = Exercise.objects.filter(user=self.request.user)
+            context['formset'] = exercise_formset
+        return context
 
     def get_initial(self):
         initial = super(WorkoutSessionCreateView, self).get_initial()
@@ -134,7 +188,14 @@ class WorkoutSessionCreateView(WorkoutSessionFormsetMixin, CreateView):
             initial['workout_plan'] = workoutplan_pk
         return initial
 
-class WorkoutSessionUpdateView(WorkoutSessionFormsetMixin, UpdateView):
+    def test_func(self):
+        workoutplan_pk = self.kwargs.get('workoutplan_pk')
+        workout_plan = get_object_or_404(WorkoutPlan, pk=workoutplan_pk)
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
+
+class WorkoutSessionUpdateView(LoginRequiredMixin, UserPassesTestMixin, WorkoutSessionFormsetMixin, UpdateView):
     model = WorkoutSession
     form_class = WorkoutSessionForm
 
@@ -155,9 +216,24 @@ class WorkoutSessionUpdateView(WorkoutSessionFormsetMixin, UpdateView):
         context['minutes'] = int(minutes)
         context['seconds'] = int(seconds)
 
-        return context
+        if self.request.method == 'POST':
+            context['formset'] = ExerciseInSessionFormSet(self.request.POST, self.request.FILES)
+        else:
+            exercise_formset = ExerciseInSessionFormSet(instance=workout_session)
+            for form in exercise_formset.forms:
+                form.fields['exercise'].queryset = Exercise.objects.filter(user=self.request.user)
+            context['formset'] = exercise_formset
 
-class WorkoutSessionDeleteView(DeleteView):
+        return context
+    
+    def test_func(self):
+        workoutplan_pk = self.kwargs.get('workoutplan_pk')
+        workout_plan = get_object_or_404(WorkoutPlan, pk=workoutplan_pk)
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
+
+class WorkoutSessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = WorkoutSession
 
     def get_success_url(self):
@@ -167,8 +243,15 @@ class WorkoutSessionDeleteView(DeleteView):
     def get_object(self, queryset=None):
         session_pk = self.kwargs.get('session_pk')
         return get_object_or_404(WorkoutSession, pk=session_pk)
+    
+    def test_func(self):
+        workoutplan_pk = self.kwargs.get('workoutplan_pk')
+        workout_plan = get_object_or_404(WorkoutPlan, pk=workoutplan_pk)
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
 
-class WorkoutSessionDetailView(DetailView):
+class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = WorkoutSession
     context_object_name = 'workout_session'
 
@@ -181,3 +264,10 @@ class WorkoutSessionDetailView(DetailView):
         context['title'] = 'Session Details'
         context['exercises'] = ExerciseInSession.objects.filter(workout_session_id=self.kwargs.get('session_pk'))
         return context
+    
+    def test_func(self):
+        workoutplan_pk = self.kwargs.get('workoutplan_pk')
+        workout_plan = get_object_or_404(WorkoutPlan, pk=workoutplan_pk)
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
