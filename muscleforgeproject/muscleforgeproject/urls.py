@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
+from django.conf.urls import handler404
 from users import views as user_views
+from muscleforge.views import custom_404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,3 +30,5 @@ urlpatterns = [
     path('settings/', user_views.account_settings, name='account-settings'),
     path('', include('muscleforge.urls'))
 ]
+
+handler404 = 'muscleforge.views.custom_404'

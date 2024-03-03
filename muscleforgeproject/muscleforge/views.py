@@ -342,3 +342,6 @@ class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailVi
         if self.request.user.id == workout_plan.user.id:
             return True
         return False
+
+def custom_404(request, exception):
+    return render(request, 'muscleforge/404.html', status=404)

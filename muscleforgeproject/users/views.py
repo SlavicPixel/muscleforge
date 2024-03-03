@@ -35,7 +35,9 @@ def profile(request):
         p_form = ProfileUpdateForm(instance=request.user.userprofile)
 
     context = {
-        'p_form': p_form
+        'p_form': p_form,
+        'breadcrumbs': [{'title': f"{request.user.username}'s Profile"}],
+        'title': f'{request.user.username}'
     }
     return render(request, 'users/profile.html', context)
 
@@ -52,6 +54,8 @@ def account_settings(request):
         u_form = UserUpdateForm(instance=request.user)
 
     context = {
-        'u_form': u_form
+        'u_form': u_form,
+        'breadcrumbs': [{'title': 'Account Settings'}],
+        'title': 'Account Settings'
     }
     return render(request, 'users/account_settings.html', context)
