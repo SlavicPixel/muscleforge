@@ -43,16 +43,9 @@ class ExerciseInSession(models.Model):
     sets = models.IntegerField()
     weight_used = models.FloatField(blank=True, null=True)  
 
-class ProgressTracker(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
-    weight = models.FloatField(blank=True, null=True)
-    body_measurements = models.TextField(blank=True, null=True)  
-    notes = models.TextField(blank=True, null=True)
-
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=50)  
+    status = models.BooleanField(default=False)  
