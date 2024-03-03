@@ -26,7 +26,13 @@ class ExerciseListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)
     
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [{'title': 'Exercises'} ]
+        context["title"] = 'Exercises'
+        return context
+    
+    
 class ExerciseCreateView(LoginRequiredMixin, CreateView): # dodati login reguired
     model = Exercise
     success_url = '/exercises/'
@@ -39,6 +45,8 @@ class ExerciseCreateView(LoginRequiredMixin, CreateView): # dodati login reguire
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['action'] = 'Add'
+        context["breadcrumbs"] = [{'title': 'Exercises', 'url': reverse_lazy('exercise-list')}, {'title': 'Add Exercise'}]
+        context["title"] = 'Add Exercise'
         return context
 
 class ExerciseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # dodati login reguired
@@ -49,6 +57,8 @@ class ExerciseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): #
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['action'] = 'Update'
+        context["breadcrumbs"] = [{'title': 'Exercises', 'url': reverse_lazy('exercise-list')}, {'title': 'Update Exercise'}]
+        context["title"] = 'Update Exercise'
         return context
 
     def test_func(self):
@@ -60,6 +70,12 @@ class ExerciseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): #
 class ExerciseDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView): # dodati login reguired
     model = Exercise
     success_url = '/exercises/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [{'title': 'Exercises', 'url': reverse_lazy('exercise-list')}, {'title': 'Delete Exercise'}]
+        context["title"] = 'Delete Exercise'
+        return context
 
     def test_func(self):
         exercise = self.get_object()
@@ -75,6 +91,12 @@ class WorkoutPlanListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [{'title': 'Workout Plans'}]
+        context["title"] = 'Workout Plans'
+        return context
+
 class WorkoutPlanCreateView(LoginRequiredMixin, CreateView):
     model = WorkoutPlan
     form_class = WorkoutPlanForm
@@ -86,6 +108,8 @@ class WorkoutPlanCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['action'] = 'Add'
+        context["breadcrumbs"] = [{'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, {'title': 'Add Workout Plan'}]
+        context["title"] = 'Delete Exercise'
         return context
 
 class WorkoutPlanDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -95,6 +119,7 @@ class WorkoutPlanDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
     def get_context_data(self, **kwargs):
         workoutplan = self.get_object()
         context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [{'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, {'title': f'{workoutplan.title}'}]
         context['title'] = f'{workoutplan.title}'
         return context
 
@@ -114,7 +139,12 @@ class WorkoutPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
+        workoutplan = self.get_object()
         context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})}, 
+            {'title': 'Update'}]
         context['action'] = 'Update'
         return context
 
@@ -133,6 +163,16 @@ class WorkoutPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView)
         if self.request.user.id == workout_plan.user.id:
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        workoutplan = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})}, 
+            {'title': 'Delete'}]
+        context['action'] = 'Delete'
+        return context
 
 class WorkoutSessionFormsetMixin(ModelFormMixin):
     form_class = WorkoutSessionForm
@@ -179,6 +219,13 @@ class WorkoutSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, WorkoutS
             for form in exercise_formset.forms:
                 form.fields['exercise'].queryset = Exercise.objects.filter(user=self.request.user)
             context['formset'] = exercise_formset
+
+        workoutplan = get_object_or_404(WorkoutPlan, pk=self.kwargs.get('workoutplan_pk'))
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})}, 
+            {'title': 'Add Workout Session'}]
+
         return context
 
     def get_initial(self):
@@ -224,6 +271,13 @@ class WorkoutSessionUpdateView(LoginRequiredMixin, UserPassesTestMixin, WorkoutS
                 form.fields['exercise'].queryset = Exercise.objects.filter(user=self.request.user)
             context['formset'] = exercise_formset
 
+        workoutplan = get_object_or_404(WorkoutPlan, pk=self.kwargs.get('workoutplan_pk'))
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})},
+            {'title': 'Workout Session Details', 'url': reverse_lazy('workoutsession-detail', kwargs={'workoutplan_pk': workoutplan.id, 'session_pk': self.get_object().id})}, 
+            {'title': 'Edit Workout Session'}]
+
         return context
     
     def test_func(self):
@@ -251,6 +305,17 @@ class WorkoutSessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteVi
             return True
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workoutplan = get_object_or_404(WorkoutPlan, pk=self.kwargs.get('workoutplan_pk'))
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})},
+            {'title': 'Workout Session Details', 'url': reverse_lazy('workoutsession-detail', kwargs={'workoutplan_pk': workoutplan.id, 'session_pk': self.get_object().id})}, 
+            {'title': 'Delete Workout Session'}]
+        return context
+    
+
 class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = WorkoutSession
     context_object_name = 'workout_session'
@@ -263,6 +328,12 @@ class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailVi
         context = super().get_context_data(**kwargs)
         context['title'] = 'Session Details'
         context['exercises'] = ExerciseInSession.objects.filter(workout_session_id=self.kwargs.get('session_pk'))
+        
+        workoutplan = get_object_or_404(WorkoutPlan, pk=self.kwargs.get('workoutplan_pk'))
+        context["breadcrumbs"] = [
+            {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
+            {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})}, 
+            {'title': 'Workout Session Details'}]
         return context
     
     def test_func(self):

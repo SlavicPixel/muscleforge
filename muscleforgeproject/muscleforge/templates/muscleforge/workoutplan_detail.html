@@ -2,16 +2,16 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Workout Plan Detail</h2>
+    <h2>Workout Plan Details</h2>
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">{{ workout_plan.title }}</h3>
             <p class="card-text"><strong>Start Date:</strong> {{ workout_plan.start_date|date:"F d, Y" }}</p>
             <p class="card-text"><strong>End Date:</strong> {{ workout_plan.end_date|date:"F d, Y" }}</p>
             {% if workout_plan.status %}
-                <p class="card-text"><strong>Status:</strong> Completed</p>
+                <p class="card-text"><strong>Status:</strong> <span class="text-success">Completed</span></p>
             {% else %}
-                <p class="card-text"><strong>Status:</strong> Not Completed</p>
+                <p class="card-text"><strong>Status:</strong> <span class="text-danger">Not Completed</span></p>
             {% endif %}
             <a href="{% url 'workoutplan-update' workout_plan.id %}" class="btn btn-primary">Edit Plan</a>
             <a href="{% url 'workoutplan-delete' workout_plan.id %}" class="btn btn-danger">Delete Plan</a>

@@ -86,10 +86,16 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
                     
-                    <ol class="breadcrumb">
+                    <ol class="breadcrumb mt-3">
                         <li class="breadcrumb-item"><a href="{% url 'muscleforge-home' %}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'muscleforge-home' %}">Home</a></li>
-                    </ol>
+                        {% for crumb in breadcrumbs %}
+                          {% if forloop.last %}
+                            <li class="breadcrumb-item active" aria-current="page">{{ crumb.title }}</li>
+                          {% else %}
+                            <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                      </ol>
                     
                     
                     <!-- Sidebar Toggle (Topbar) -->
