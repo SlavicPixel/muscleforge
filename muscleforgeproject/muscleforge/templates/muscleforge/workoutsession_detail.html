@@ -2,17 +2,17 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Workout Session Details</h2>
     <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">Session on {{ workout_session.date|date:"F d, Y" }}</h3>
-            <p class="card-text"><strong>Workout Plan:</strong> {{ workout_session.workout_plan }}</p>
-            <p class="card-text"><strong>Duration:</strong> {{ workout_session.duration}}</p>
-            <a href="{% url 'workoutsession-update' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-primary btn-sm">Edit Session</a>
-            <a href="{% url 'workoutsession-delete' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-danger btn-sm">Delete Session</a>
-        </div>
+      <div class="card-header">Workout Session Details</div>
+      <div class="card-body">
+          <h3 class="card-title">Session on {{ workout_session.date|date:"F d, Y" }}</h3>
+          <p class="card-text"><strong>Workout Plan:</strong> {{ workout_session.workout_plan }}</p>
+          <p class="card-text"><strong>Duration:</strong> {{ workout_session.duration}}</p>
+          <a href="{% url 'workoutsession-update' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-primary btn-sm">Edit Session</a>
+          <a href="{% url 'workoutsession-delete' workoutplan_pk=workout_session.workout_plan.id session_pk=workout_session.id %}" class="btn btn-danger btn-sm">Delete Session</a>
+      </div>
     </div>
-    <table class="table">
+    <table class="table mt-4">
         <thead>
           <tr>
             <th scope="col">Exercise</th>

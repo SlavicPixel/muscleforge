@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Workout Plan Details</h2>
     <div class="card">
+        <div class="card-header">Workout Plan Details</div>
         <div class="card-body">
             <h3 class="card-title">{{ workout_plan.title }}</h3>
             <p class="card-text"><strong>Start Date:</strong> {{ workout_plan.start_date|date:"F d, Y" }}</p>

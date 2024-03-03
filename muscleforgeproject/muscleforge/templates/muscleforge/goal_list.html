@@ -1,0 +1,36 @@
+{% extends "muscleforge/base.html" %}
+{% block content %}
+    <div class="container">
+      <h2 class="text-center">Your Goals</h2>
+      <div class="text-center">
+        <a href="{% url 'goal-new' %}" class="btn btn-success mt-3">Add Goal</a>
+      </div>
+      <hr class="hr" />
+      <div class="row">
+          {% if goals %}
+            {% for goal in goals %}
+                <div class="col-md-4">
+                  <div class="card mt-4" style="width: 18rem;">
+                    <div class="card-body">
+                      {% if goal.title %}
+                        <h5 class="card-title"><a href="{% url 'goal-detail' goal.id %}" class="text-decoration-none">{{ goal.title }}</a></h5>    
+                      {% endif %}                 
+                      <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'goal-detail' goal.id %}">{{ goal.start_date }} - {{ goal.end_date }}</a></h6>
+                      {% if goal.status %}
+                        <p class="card-text">Status: <span class="text-success">Completed</span></p>
+                    {% else %}
+                        <p class="card-text">Status: <span class="text-danger">Not Completed</span></small></p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            </div>
+          {% else %}
+            </div>
+            <div class="text-center">
+              <h4 class="mt-4">No goals</h4>
+            </div> 
+          {% endif %}
+    </div>
+{% endblock content %}

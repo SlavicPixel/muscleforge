@@ -1,0 +1,27 @@
+{% extends "muscleforge/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">Goal Details</div>
+        <div class="card-body">
+            <h3 class="card-title">{{ goal.title }}</h3>
+            <p class="card-text"><strong>Start Date:</strong> {{ goal.start_date|date:"F d, Y" }}</p>
+            <p class="card-text"><strong>End Date:</strong> {{ goal.end_date|date:"F d, Y" }}</p>
+            {% if goal.status %}
+                <p class="card-text"><strong>Status:</strong> <span class="text-success">Completed</span></p>
+            {% else %}
+                <p class="card-text"><strong>Status:</strong> <span class="text-danger">Not Completed</span></p>
+            {% endif %}
+            <a href="{% url 'goal-update' goal.id %}" class="btn btn-primary">Edit Goal</a>
+            <a href="{% url 'goal-delete' goal.id %}" class="btn btn-danger">Delete Goal</a>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">Goal Description</div>
+        <div class="card-body">
+            <p class="card-text">{{ goal.description }}</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

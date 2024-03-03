@@ -24,7 +24,7 @@
             <td>{{ exercise.exercise_type }}</td>
             <td>{{ exercise.equipment_needed }}</td>
             <td>
-              <a class="btn btn-secondary btn-sm" href="{% url 'exercise-update' exercise.id %}">Update</a>
+              <a class="btn btn-primary btn-sm" href="{% url 'exercise-update' exercise.id %}">Update</a>
               <a class="btn btn-danger btn-sm " href="{% url 'exercise-delete' exercise.id %}">Delete</a>
             </td>
           </tr>

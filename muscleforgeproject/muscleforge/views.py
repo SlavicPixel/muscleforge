@@ -11,8 +11,8 @@ from django.views.generic import (
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession
-from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet
+from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession, Goal
+from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet, GoalForm
 from datetime import timedelta
 
 def home(request):
@@ -129,7 +129,7 @@ class WorkoutPlanDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
             return True
         return False
 
-class WorkoutPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # dodati login reguired
+class WorkoutPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = WorkoutPlan
     form_class = WorkoutPlanForm
     context_object_name = 'workout_plan'
@@ -154,7 +154,7 @@ class WorkoutPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
             return True
         return False
 
-class WorkoutPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView): # dodati login reguired
+class WorkoutPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = WorkoutPlan
     success_url = '/workoutplans/'
 
@@ -342,6 +342,102 @@ class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailVi
         if self.request.user.id == workout_plan.user.id:
             return True
         return False
+
+class GoalListView(LoginRequiredMixin, ListView):
+    model = Goal
+    context_object_name = 'goals'
+    ordering = ['start_date']
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [{'title': 'Goals'} ]
+        context["title"] = 'Goals'
+        return context
+
+class GoalDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Goal
+    context_object_name = 'goal'
+
+    def get_context_data(self, **kwargs):
+        workoutplan = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Goals', 'url': reverse_lazy('goal-list')}, 
+            {'title': 'Goal Details'}]
+        context['title'] = 'Goal Details'
+        return context
+
+    def test_func(self):
+        workout_plan = self.get_object()
+        if self.request.user.id == workout_plan.user.id:
+            return True
+        return False
+
+class GoalCreateView(LoginRequiredMixin, CreateView):
+    model = Goal
+    form_class = GoalForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Goals', 'url': reverse_lazy('goal-list')}, 
+            {'title': 'Add Goal'}]
+        context["title"] = 'Add Goal'
+        context["action"] = 'Add'
+        return context
+
+class GoalUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Goal
+    form_class = GoalForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        goal = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Goals', 'url': reverse_lazy('goal-list')}, 
+            {'title': 'Goal Details', 'url': reverse_lazy('goal-detail', kwargs={'pk': goal.id})}, 
+            {'title': 'Add Goal'}]
+        context["title"] = 'Add Goal'
+        context["action"] = 'Update'
+        return context
+
+    def test_func(self):
+        goal = self.get_object()
+        if self.request.user.id == goal.user.id:
+            return True
+        return False
+
+class GoalDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Goal
+    success_url = '/goals/'
+
+    def get_context_data(self, **kwargs):
+        goal = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {'title': 'Goals', 'url': reverse_lazy('goal-list')}, 
+            {'title': 'Goal Details', 'url': reverse_lazy('goal-detail', kwargs={'pk': goal.id})}, 
+            {'title': 'Delete Goal'}]
+        context["title"] = 'Delete Goal'
+        return context
+    
+    def test_func(self):
+        goal = self.get_object()
+        if self.request.user.id == goal.user.id:
+            return True
+        return False
+
 
 def custom_404(request, exception):
     return render(request, 'muscleforge/404.html', status=404)

@@ -45,7 +45,11 @@ class ExerciseInSession(models.Model):
 
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.BooleanField(default=False)  
+
+    def get_absolute_url(self):
+        return reverse("goal-detail", kwargs={"pk": self.pk})

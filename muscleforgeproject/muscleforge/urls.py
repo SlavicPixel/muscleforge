@@ -15,7 +15,12 @@ from .views import (
     WorkoutSessionCreateView,
     WorkoutSessionDetailView,
     WorkoutSessionUpdateView,
-    WorkoutSessionDeleteView
+    WorkoutSessionDeleteView,
+    GoalListView,
+    GoalDetailView,
+    GoalCreateView,
+    GoalUpdateView,
+    GoalDeleteView
 )
 
 urlpatterns = [
@@ -33,6 +38,11 @@ urlpatterns = [
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/', WorkoutSessionDetailView.as_view(), name="workoutsession-detail"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/update', WorkoutSessionUpdateView.as_view(), name="workoutsession-update"),
     path('workoutplans/<int:workoutplan_pk>/workoutsession/<int:session_pk>/delete', WorkoutSessionDeleteView.as_view(), name="workoutsession-delete"),
+    path('goals/', GoalListView.as_view(), name="goal-list"),
+    path('goals/new', GoalCreateView.as_view(), name="goal-new"),
+    path('goals/<int:pk>/', GoalDetailView.as_view(), name="goal-detail"),
+    path('goals/<int:pk>/update/', GoalUpdateView.as_view(), name="goal-update"),
+    path('goals/<int:pk>/delete/', GoalDeleteView.as_view(), name="goal-delete"),
 ]
 
 if settings.DEBUG:
