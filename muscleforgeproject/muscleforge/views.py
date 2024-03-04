@@ -13,10 +13,29 @@ from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession, Goal
 from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet, GoalForm
-from datetime import timedelta
+from datetime import timedelta, date
 
 def home(request):
-    return render(request, 'muscleforge/home.html')
+    today = date.today()
+    upcoming_plans = WorkoutPlan.objects.filter(start_date__gte=today, status=False, user=request.user).order_by('start_date')  
+    active_plan = upcoming_plans.first()
+
+    total_goals = Goal.objects.filter(user=request.user).count()
+    completed_goals = Goal.objects.filter(user=request.user, status=True).count()
+
+    active_session = None
+    
+    if active_plan:
+        active_session = WorkoutSession.objects.filter(workout_plan=active_plan.id, date__gte=today).first()
+
+    context = {
+        'active_plan': active_plan,
+        'total_goals': total_goals,
+        'completed_goals': completed_goals,
+        'active_session': active_session
+    }
+
+    return render(request, 'muscleforge/home.html', context=context)
 
 class ExerciseListView(LoginRequiredMixin, ListView):
     model = Exercise
@@ -333,7 +352,7 @@ class WorkoutSessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailVi
         context["breadcrumbs"] = [
             {'title': 'Workout Plans', 'url': reverse_lazy('workoutplan-list')}, 
             {'title': f'{workoutplan.title}', 'url': reverse_lazy('workoutplan-detail', kwargs={'pk': workoutplan.id})}, 
-            {'title': 'Workout Session Details'}]
+            {'title': 'Session Details'}]
         return context
     
     def test_func(self):

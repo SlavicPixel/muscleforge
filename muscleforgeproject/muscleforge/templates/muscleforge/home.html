@@ -1,9 +1,90 @@
- {% extends "muscleforge/base.html" %}
- {% block content %}
- <div class="container-fluid">
+{% extends "muscleforge/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+    <div class="welcome-section bg-light p-5 rounded-3 text-center">
+        <h1 class="mb-3">Welcome back, {{ user.username }}!</h1>
+        <p class="lead">Ready to crush your fitness goals today?</p>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mt-4" style="width: 18rem;">
+                <div class="card-header">Active Workout Plan</div>
+                <div class="card-body">
+                {% if active_plan %} 
+                <h5 class="card-title"><a href="{% url 'workoutplan-detail' active_plan.id %}" class="text-decoration-none">{{ active_plan.title }}</a></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ active_plan.start_date }} - {{ active_plan.end_date }}</h6>
+                <p class="card-text">{{ exercise.description }}</p>
+                {% if active_plan.status %}
+                <p class="card-text">Status: <span class="text-success">Completed</span></p>
+                {% else %}
+                <p class="card-text">Status: <span class="text-danger">Not Completed</span></small></p>
+                {% endif %}
+                {% else %}
+                <div class="text-center">
+                    <p class="card-text mt-2">There are currently no active plans.</p>
+                    <a href="{% url 'workoutplan-new' %}" class="btn btn-success mt-3">Add Workout Plan</a>
+                </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+            
+            <!-- Pie Chart -->
+            <div id="goalsData" data-completed="{{completed_goals}}" data-total="{{total_goals}}"></div>
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header">Goal Progress</div>
+                    <div class="card-body">
+                    {% if total_goals %}
+                        <!-- Card Body -->
+                        <h5 class="card-title">{{ completed_goals }}/{{ total_goals }} Goals Completed</h5>
+                        <div class="chart-pie pt-4 pb-2">
+                            <canvas id="GoalChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-center small">
+                            <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Completed
+                            </span>
+                            <span class="mr-2">
+                            <i class="fas fa-circle text-danger"></i> Not Completed
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="text-center">
+                            <p class="card-text mt-2">There are currently no goals.</p>
+                            <a href="{% url 'goal-new' %}" class="btn btn-success mt-3">Add Goal</a>
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
-
-</div>
+        <div class="col-md-4">
+            <div class="card shadow mt-4 ml-5" style="width: 18rem;">
+                <div class="card-header">Active Workout Session</div>
+                <div class="card-body">
+                {% if active_session %} 
+                    <a href="{% url 'workoutsession-detail' workoutplan_pk=active_plan.id session_pk=active_session.id %}"><h5 class="card-title">Session on {{ active_session.date|date:"F d, Y" }}</h5></a>
+                    <p class="card-text">{{ session.notes }}</p>
+                {% else %}
+                    <div class="text-center">
+                        <p class="card-text mt-2">There are currently no active sessions.</p>
+                        {% if active_plan %}
+                            <a href="{% url 'workoutsession-new' active_plan.id %}" class="btn btn-success mt-3">Add New Session</a>
+                        {% else %}
+                            <a href="{% url 'workoutplan-new' %}" class="btn btn-success mt-3">Add Workout Session</a>
+                        {% endif %}
+                        
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 {% endblock content %}
+{% block javascript %}
+    <script src="{% static "muscleforge/vendor/chart.js/Chart.min.js" %}"></script>
+    <script src="{% static "muscleforge/js/goal-pie.js" %}"></script>
+{% endblock javascript %}
