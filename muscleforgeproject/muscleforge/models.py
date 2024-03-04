@@ -51,5 +51,8 @@ class Goal(models.Model):
     end_date = models.DateField()
     status = models.BooleanField(default=False)  
 
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
         return reverse("goal-detail", kwargs={"pk": self.pk})
