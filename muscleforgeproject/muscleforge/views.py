@@ -11,10 +11,12 @@ from django.views.generic import (
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 from .models import WorkoutPlan, Exercise, WorkoutSession, ExerciseInSession, Goal
 from .forms import WorkoutPlanForm, WorkoutSessionForm, ExerciseInSessionFormSet, GoalForm
 from datetime import timedelta, date
 
+@login_required
 def home(request):
     today = date.today()
     upcoming_plans = WorkoutPlan.objects.filter(start_date__gte=today, status=False, user=request.user).order_by('start_date')  

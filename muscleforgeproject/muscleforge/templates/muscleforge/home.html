@@ -5,6 +5,7 @@
     <div class="welcome-section bg-light p-5 rounded-3 text-center">
         <h1 class="mb-3">Welcome back, {{ user.username }}!</h1>
         <p class="lead">Ready to crush your fitness goals today?</p>
+        <hr>
     </div>
     <div class="row">
         <div class="col-md-4">
@@ -38,7 +39,7 @@
                     <div class="card-body">
                     {% if total_goals %}
                         <!-- Card Body -->
-                        <h5 class="card-title">{{ completed_goals }}/{{ total_goals }} Goals Completed</h5>
+                        <h5 class="card-title">{{ completed_goals }} / {{ total_goals }} <a href="{% url "goal-list" %}">Goals</a> Completed</h5>
                         <div class="chart-pie pt-4 pb-2">
                             <canvas id="GoalChart"></canvas>
                         </div>
