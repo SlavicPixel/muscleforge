@@ -30,7 +30,7 @@ class Exercise(models.Model):
 class WorkoutSession(models.Model):
     workout_plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE)
     date = models.DateField()
-    duration = models.DurationField() 
+    duration = models.DurationField(blank=True, null=True) 
     notes = models.TextField(blank=True, null=True)
 
     def get_absolute_url(self):
