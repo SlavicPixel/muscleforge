@@ -70,11 +70,13 @@
                     <p class="card-text">{{ session.notes }}</p>
                 {% else %}
                     <div class="text-center">
-                        <p class="card-text mt-2">There are currently no active sessions.</p>
                         {% if active_plan %}
+                            <p class="card-text mt-2">There are currently no active sessions.</p>
                             <a href="{% url 'workoutsession-new' active_plan.id %}" class="btn btn-success mt-3">Add New Session</a>
                         {% else %}
-                            <a href="{% url 'workoutplan-new' %}" class="btn btn-success mt-3">Add Workout Session</a>
+                            <p class="card-text mt-2">There are currently no active sessions.</p>
+                            <p class="card-text mt-2">You need to create a workout plan first to add sessions.</p>
+                            <a href="{% url 'workoutplan-new' %}" class="btn btn-success mt-3">Add Workout Plan and Sessions</a>
                         {% endif %}
                         
                     </div>
